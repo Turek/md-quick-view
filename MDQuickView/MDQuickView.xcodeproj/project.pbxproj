@@ -36,6 +36,7 @@
 		94844A7768CC6A6CE6FFFB70 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDAFF9153444EE7A703227E6 /* Cocoa.framework */; };
 		B1794595FD14D0BF1E835CBF /* FrontMatterParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8AB5FBBA464F031E2370E0 /* FrontMatterParserTests.swift */; };
 		B1794596FD14D0BF1E835CBF /* MarkdownRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8AB5FCBA464F031E2370E0 /* MarkdownRendererTests.swift */; };
+		B1794597FD14D0BF1E835CBF /* DocumentModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8AB5FDBA464F031E2370E0 /* DocumentModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +94,7 @@
 		DDAFF9153444EE7A703227E6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		FE8AB5FBBA464F031E2370E0 /* FrontMatterParserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FrontMatterParserTests.swift; sourceTree = "<group>"; };
 		FE8AB5FCBA464F031E2370E0 /* MarkdownRendererTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarkdownRendererTests.swift; sourceTree = "<group>"; };
+		FE8AB5FDBA464F031E2370E0 /* DocumentModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DocumentModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -237,6 +239,7 @@
 			children = (
 				FE8AB5FBBA464F031E2370E0 /* FrontMatterParserTests.swift */,
 				FE8AB5FCBA464F031E2370E0 /* MarkdownRendererTests.swift */,
+				FE8AB5FDBA464F031E2370E0 /* DocumentModelTests.swift */,
 			);
 			name = MDQuickViewTests;
 			path = MDQuickViewTests;
@@ -458,6 +461,7 @@
 			files = (
 				B1794595FD14D0BF1E835CBF /* FrontMatterParserTests.swift in Sources */,
 				B1794596FD14D0BF1E835CBF /* MarkdownRendererTests.swift in Sources */,
+				B1794597FD14D0BF1E835CBF /* DocumentModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
