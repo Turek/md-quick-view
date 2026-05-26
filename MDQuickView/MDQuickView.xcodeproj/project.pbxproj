@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2EE4F0A9B6BAA217F6D4E89A /* FrontMatterParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777150852FC59AE900A886DC /* FrontMatterParser.swift */; };
 		777150572FC5942800A886DC /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 777150562FC5942800A886DC /* Quartz.framework */; };
 		777150632FC5942900A886DC /* PreviewExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 777150542FC5942800A886DC /* PreviewExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7771506F2FC5956200A886DC /* QuickLookThumbnailing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7771506E2FC5956200A886DC /* QuickLookThumbnailing.framework */; };
@@ -52,6 +51,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 7771506C2FC5956200A886DC;
 			remoteInfo = ThumbnailExtension;
+		};
+		E4345FFC7CF2B42C38610E9C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7771503A2FC5938400A886DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 777150412FC5938400A886DC;
+			remoteInfo = MDQuickView;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -247,6 +253,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				FD9BD285F7C935E31FE32E1E /* PBXTargetDependency */,
 			);
 			name = MDQuickViewTests;
 			productName = MDQuickViewTests;
@@ -447,7 +454,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B1794595FD14D0BF1E835CBF /* FrontMatterParserTests.swift in Sources */,
-				2EE4F0A9B6BAA217F6D4E89A /* FrontMatterParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -464,12 +470,19 @@
 			target = 7771506C2FC5956200A886DC /* ThumbnailExtension */;
 			targetProxy = 777150752FC5956200A886DC /* PBXContainerItemProxy */;
 		};
+		FD9BD285F7C935E31FE32E1E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MDQuickView;
+			target = 777150412FC5938400A886DC /* MDQuickView */;
+			targetProxy = E4345FFC7CF2B42C38610E9C /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		2AA4712C674F3F2CCCEBA802 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = GKV27784C8;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -477,9 +490,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.turczynski.MDQuickViewTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MDQuickView.app/Contents/MacOS/MDQuickView";
 			};
 			name = Debug;
 		};
@@ -794,6 +807,7 @@
 		DE7A3997F815764EF2DCAA2A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = GKV27784C8;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -801,9 +815,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.turczynski.MDQuickViewTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MDQuickView.app/Contents/MacOS/MDQuickView";
 			};
 			name = Release;
 		};

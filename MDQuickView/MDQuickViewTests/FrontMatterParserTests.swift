@@ -5,94 +5,88 @@
 //  Created by Turek on 26/05/2026.
 //
 
-import XCTest
+import Testing
+@testable import MDQuickView
 
-final class FrontMatterParserTests: XCTestCase {
+struct FrontMatterParserTests {
 
-    // Compares parsed fields without relying on tuple Equatable conformance.
-    private func assertFields(
-        _ actual: [FrontMatterParser.Field],
-        _ expected: [FrontMatterParser.Field],
-        file: StaticString = #filePath,
-        line: UInt = #line
-    ) {
-        XCTAssertEqual(actual.count, expected.count, "field count", file: file, line: line)
-        for (lhs, rhs) in zip(actual, expected) {
-            XCTAssertEqual(lhs.key, rhs.key, "key", file: file, line: line)
-            XCTAssertEqual(lhs.value, rhs.value, "value for \(rhs.key)", file: file, line: line)
-        }
+    // A source that yields extracted fields and a stripped body.
+    struct ExtractionCase: Sendable {
+        let name: String
+        let source: String
+        let keys: [String]
+        let values: [String]
+        let body: String
     }
 
-    func testValidFrontMatter() {
-        let source = """
-        ---
-        title: Hello World
-        author: Jane
-        ---
-        # Body
+    @Test(arguments: [
+        ExtractionCase(
+            name: "scalars",
+            source: """
+            ---
+            title: Hello World
+            author: Jane
+            ---
+            # Body
 
-        Text.
-        """
-
-        let result = FrontMatterParser.parse(source)
-
-        assertFields(result.fields, [("title", "Hello World"), ("author", "Jane")])
-        XCTAssertEqual(result.body, "# Body\n\nText.")
+            Text.
+            """,
+            keys: ["title", "author"],
+            values: ["Hello World", "Jane"],
+            body: "# Body\n\nText."
+        ),
+        ExtractionCase(
+            name: "inline array",
+            source: """
+            ---
+            tags: [swift, macos, quicklook]
+            ---
+            Body
+            """,
+            keys: ["tags"],
+            values: ["swift, macos, quicklook"],
+            body: "Body"
+        ),
+        ExtractionCase(
+            name: "nested object as raw string",
+            source: """
+            ---
+            author:
+              name: Jane
+              role: editor
+            title: Test
+            ---
+            Body
+            """,
+            keys: ["author", "title"],
+            values: ["name: Jane\nrole: editor", "Test"],
+            body: "Body"
+        ),
+    ])
+    func extractsFields(_ testCase: ExtractionCase) {
+        let result = FrontMatterParser.parse(testCase.source)
+        #expect(result.fields.map(\.key) == testCase.keys)
+        #expect(result.fields.map(\.value) == testCase.values)
+        #expect(result.body == testCase.body)
     }
 
-    func testNoFrontMatter() {
+    @Test func noFrontMatterReturnsFullSource() {
         let source = "# Just Markdown\n\nNo front matter here."
-
         let result = FrontMatterParser.parse(source)
-
-        XCTAssertTrue(result.fields.isEmpty)
-        XCTAssertEqual(result.body, source)
+        #expect(result.fields.isEmpty)
+        #expect(result.body == source)
     }
 
-    func testInlineArrayValue() {
-        let source = """
-        ---
-        tags: [swift, macos, quicklook]
-        ---
-        Body
-        """
-
-        let result = FrontMatterParser.parse(source)
-
-        assertFields(result.fields, [("tags", "swift, macos, quicklook")])
-        XCTAssertEqual(result.body, "Body")
-    }
-
-    func testNestedObjectAsRawString() {
-        let source = """
-        ---
-        author:
-          name: Jane
-          role: editor
-        title: Test
-        ---
-        Body
-        """
-
-        let result = FrontMatterParser.parse(source)
-
-        assertFields(result.fields, [("author", "name: Jane\nrole: editor"), ("title", "Test")])
-        XCTAssertEqual(result.body, "Body")
-    }
-
-    func testEmptyFile() {
+    @Test func emptyFile() {
         let result = FrontMatterParser.parse("")
-
-        XCTAssertTrue(result.fields.isEmpty)
-        XCTAssertEqual(result.body, "")
+        #expect(result.fields.isEmpty)
+        #expect(result.body == "")
     }
 
-    func testUnterminatedFrontMatterTreatedAsBody() {
+    @Test func unterminatedFrontMatterTreatedAsBody() {
         let source = "---\ntitle: orphan\nstill body without closing delimiter"
-
         let result = FrontMatterParser.parse(source)
-
-        XCTAssertTrue(result.fields.isEmpty)
-        XCTAssertEqual(result.body, source)
+        #expect(result.fields.isEmpty)
+        #expect(result.body == source)
     }
 }
