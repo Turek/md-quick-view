@@ -32,12 +32,15 @@ struct PreviewModeSelector: View {
     var body: some View {
         Picker("View mode", selection: $mode) {
             ForEach(PreviewMode.allCases) { mode in
-                Text(mode.title).tag(mode)
+                Text(mode.title)
+                    .accessibilityLabel(mode.title)
+                    .tag(mode)
             }
         }
         .pickerStyle(.segmented)
         .labelsHidden()
         .fixedSize()
+        .accessibilityLabel("View mode")
         .onChange(of: mode) { _, newValue in
             onModeChange(newValue)
         }

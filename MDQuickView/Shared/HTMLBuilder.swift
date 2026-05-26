@@ -51,6 +51,7 @@ enum HTMLBuilder {
 
         return """
         <table class="front-matter">
+        <caption class="visually-hidden">Document front matter</caption>
         <tbody>
         \(rows)
         </tbody>
