@@ -1,16 +1,18 @@
 import SwiftUI
 import WebKit
 
-// A read-only preview surface backed by the native SwiftUI WebView and WebPage.
-// JavaScript is disabled and every navigation except the programmatic content load is refused,
-// so a link click cannot carry the preview to arbitrary, network-backed content. The SwiftUI
-// WebView is hosted inside an NSView so the AppKit preview controller can place it among its
-// other mode surfaces. Used for both Preview mode and the rendered pane of Side-by-side mode.
+// Backing model for the preview, owning the single WebPage that renders the document.
+// One instance is created per controller and never recreated, so the WebKit render pipeline is
+// built once and stays warm; mode switching only changes view visibility, never this model.
 @MainActor
-final class PreviewWebView: NSView {
+@Observable
+final class PreviewViewModel {
 
-    // The page model that backs the hosted WebView; document HTML is loaded into it directly.
-    private let page: WebPage
+    // The page that renders the document HTML; bound to a permanently mounted WebView.
+    let page: WebPage
+
+    // The verbatim source shown by the raw view.
+    private(set) var rawText: String = ""
 
     // Refuses every navigation except the programmatic content load.
     private let navigationGate = NavigationGate()
@@ -22,29 +24,12 @@ final class PreviewWebView: NSView {
         configuration.defaultNavigationPreferences.allowsContentJavaScript = false
 
         page = WebPage(configuration: configuration, navigationDecider: navigationGate)
-
-        super.init(frame: .zero)
-        autoresizingMask = [.width, .height]
-
-        let host = NSHostingView(rootView: WebView(page))
-        host.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(host)
-        NSLayoutConstraint.activate([
-            host.topAnchor.constraint(equalTo: topAnchor),
-            host.leadingAnchor.constraint(equalTo: leadingAnchor),
-            host.trailingAnchor.constraint(equalTo: trailingAnchor),
-            host.bottomAnchor.constraint(equalTo: bottomAnchor)
-        ])
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented.")
-    }
-
-    // Loads the self-contained document HTML.
-    // The parent directory is the base for best-effort relative image resolution; the sandbox
-    // may deny that access, which is expected and not treated as an error.
-    func loadDocument(_ html: String, baseURL: URL?) {
+    // Loads the document once. The parent directory is the base for best-effort relative image
+    // resolution; the sandbox may deny that access, which is expected and not treated as an error.
+    func present(html: String, baseURL: URL?, rawText: String) {
+        self.rawText = rawText
         page.load(html: html, baseURL: baseURL ?? URL(string: "about:blank")!)
     }
 }
@@ -68,5 +53,23 @@ private final class NavigationGate: WebPage.NavigationDeciding {
             return .cancel
         }
         return .allow
+    }
+}
+
+// Bridges the AppKit raw source surface into SwiftUI so it can sit alongside the WebView.
+struct RawSourceView: NSViewRepresentable {
+
+    let text: String
+
+    func makeNSView(context: Context) -> RawTextView {
+        let view = RawTextView()
+        view.display(text)
+        return view
+    }
+
+    func updateNSView(_ nsView: RawTextView, context: Context) {
+        if nsView.textView.string != text {
+            nsView.display(text)
+        }
     }
 }
