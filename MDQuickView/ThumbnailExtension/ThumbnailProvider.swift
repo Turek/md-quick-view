@@ -11,26 +11,42 @@ import AppKit
 // Generates Finder thumbnail images for Markdown files.
 // The thumbnail shows the document title on a neutral background so the file is
 // immediately identifiable at small icon sizes without being over-branded.
-class ThumbnailProvider: QLThumbnailProvider {
+final class ThumbnailProvider: QLThumbnailProvider {
+
+    // Carries the Quick Look completion handler across an actor boundary into the
+    // detached task. The handler is not Sendable, but it is invoked exactly once and
+    // never touched again here, so concurrent access cannot occur.
+    private struct CompletionHandler: @unchecked Sendable {
+        let call: (QLThumbnailReply?, Error?) -> Void
+    }
 
     override func provideThumbnail(for request: QLFileThumbnailRequest, _ handler: @escaping (QLThumbnailReply?, Error?) -> Void) {
-        let title = ThumbnailTitleResolver.resolveTitle(for: request.fileURL)
+        let fileURL = request.fileURL
         let size = request.maximumSize
+        let completion = CompletionHandler(call: handler)
 
-        let reply = QLThumbnailReply(contextSize: size, currentContextDrawing: {
-            // QLThumbnailReply provides a CG context with a bottom-left origin.
-            // NSAttributedString layout assumes a flipped (top-left) context, so
-            // install one explicitly before drawing.
-            guard let cg = NSGraphicsContext.current?.cgContext else { return false }
-            let flipped = NSGraphicsContext(cgContext: cg, flipped: true)
-            NSGraphicsContext.saveGraphicsState()
-            NSGraphicsContext.current = flipped
-            defer { NSGraphicsContext.restoreGraphicsState() }
-            ThumbnailRenderer.draw(title: title, in: CGRect(origin: .zero, size: size))
-            return true
-        })
+        // Quick Look is routinely invoked on files living on SMB shares, iCloud Drive,
+        // and similar volumes, where a cold read can stall for hundreds of milliseconds.
+        // Resolve the title and build the reply off the calling thread, then complete
+        // through the escaping handler rather than blocking it synchronously.
+        Task.detached(priority: .userInitiated) {
+            let title = ThumbnailTitleResolver.resolveTitle(for: fileURL)
 
-        handler(reply, nil)
+            let reply = QLThumbnailReply(contextSize: size, currentContextDrawing: {
+                // QLThumbnailReply provides a CG context with a bottom-left origin.
+                // NSAttributedString layout assumes a flipped (top-left) context, so
+                // install one explicitly before drawing.
+                guard let cg = NSGraphicsContext.current?.cgContext else { return false }
+                let flipped = NSGraphicsContext(cgContext: cg, flipped: true)
+                NSGraphicsContext.saveGraphicsState()
+                NSGraphicsContext.current = flipped
+                defer { NSGraphicsContext.restoreGraphicsState() }
+                ThumbnailRenderer.draw(title: title, in: CGRect(origin: .zero, size: size))
+                return true
+            })
+
+            completion.call(reply, nil)
+        }
     }
 }
 
@@ -50,9 +66,11 @@ enum ThumbnailTitleResolver {
             // Front matter title takes highest priority.
             let parsed = FrontMatterParser.parse(source)
 
-            if let titleField = parsed.fields.first(where: { $0.key == "title" }),
-               !titleField.value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                return titleField.value.trimmingCharacters(in: .whitespacesAndNewlines)
+            if let titleField = parsed.fields.first(where: { $0.key == "title" }) {
+                let value = titleField.value.trimmingCharacters(in: .whitespacesAndNewlines)
+                if !value.isEmpty {
+                    return value
+                }
             }
 
             // First Markdown heading is the second priority.
@@ -82,6 +100,7 @@ enum ThumbnailTitleResolver {
 
     // Scans the Markdown body for the first ATX heading line (leading `#` characters).
     // Returns the trimmed heading text, or nil when none is found.
+    // Note: setext-style headings (text underlined with === or ---) are not detected.
     private static func firstHeading(in body: String) -> String? {
         for line in body.components(separatedBy: "\n") {
             let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
