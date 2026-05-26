@@ -33,6 +33,7 @@
 		777150992FC59C0900A886DC /* RawTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777150892FC59B0800A886DC /* RawTextFormatter.swift */; };
 		7771509A2FC59C0900A886DC /* RawTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777150892FC59B0800A886DC /* RawTextFormatter.swift */; };
 		7771509B2FC59C0900A886DC /* RawTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777150892FC59B0800A886DC /* RawTextFormatter.swift */; };
+		777153702FC6194F00A886DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7771536F2FC6194F00A886DC /* Assets.xcassets */; };
 		94844A7768CC6A6CE6FFFB70 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDAFF9153444EE7A703227E6 /* Cocoa.framework */; };
 		AAAA0000000000000000AA02 /* RawTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA0000000000000000AA01 /* RawTextView.swift */; };
 		AAAA0000000000000000AA03 /* RawTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA0000000000000000AA01 /* RawTextView.swift */; };
@@ -100,6 +101,7 @@
 		777150872FC59AF900A886DC /* HTMLBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLBuilder.swift; sourceTree = "<group>"; };
 		777150882FC59B0100A886DC /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		777150892FC59B0800A886DC /* RawTextFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawTextFormatter.swift; sourceTree = "<group>"; };
+		7771536F2FC6194F00A886DC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AAAA0000000000000000AA01 /* RawTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawTextView.swift; sourceTree = "<group>"; };
 		AAAA0000000000000000AA05 /* RawTextViewTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RawTextViewTests.swift; sourceTree = "<group>"; };
 		DDAFF9153444EE7A703227E6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
@@ -212,6 +214,7 @@
 		777150392FC5938400A886DC = {
 			isa = PBXGroup;
 			children = (
+				7771536F2FC6194F00A886DC /* Assets.xcassets */,
 				777150832FC59AC500A886DC /* Shared */,
 				777150442FC5938500A886DC /* MDQuickView */,
 				777150582FC5942800A886DC /* PreviewExtension */,
@@ -415,6 +418,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				777153702FC6194F00A886DC /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -527,6 +531,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = GKV27784C8;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
@@ -573,6 +578,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = GKV27784C8;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -598,6 +604,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -637,6 +644,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = GKV27784C8;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -655,6 +663,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -668,6 +677,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = GKV27784C8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -675,6 +685,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MDQuickView/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "MD Quick View";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -703,6 +714,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = GKV27784C8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -710,6 +722,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MDQuickView/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "MD Quick View";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -734,6 +747,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = GKV27784C8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -766,6 +780,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = GKV27784C8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -798,6 +813,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = GKV27784C8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -829,6 +845,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = GKV27784C8;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -860,6 +877,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = GKV27784C8;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
