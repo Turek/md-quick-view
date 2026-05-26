@@ -39,6 +39,7 @@ final class RawTextView: NSView {
         textView.textColor = RawTextFormatter.textColor
         textView.font = RawTextFormatter.font
         textView.textContainerInset = NSSize(width: 8, height: 8)
+        textView.setAccessibilityLabel("Markdown source")
 
         // A container that does not track the view width disables soft wrapping, so the
         // only line breaks shown are the ones present in the source.
