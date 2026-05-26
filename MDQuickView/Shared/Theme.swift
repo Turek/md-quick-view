@@ -149,7 +149,6 @@ enum Theme {
       padding: 12px 14px;
       border-radius: 6px;
       white-space: pre-wrap;
-      word-break: break-word;
       overflow-wrap: anywhere;
     }
 

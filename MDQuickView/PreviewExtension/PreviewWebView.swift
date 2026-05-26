@@ -1,6 +1,10 @@
 import SwiftUI
 import WebKit
 
+// Base URL used when the document has no resolvable parent directory. Backed by a constant
+// literal, so it is constructed once and cannot fail at the call site.
+private let aboutBlankURL = URL(string: "about:blank")!
+
 // Backing model for the preview, owning the single WebPage that renders the document.
 // One instance is created per controller and never recreated, so the WebKit render pipeline is
 // built once and stays warm; mode switching only changes view visibility, never this model.
@@ -30,7 +34,7 @@ final class PreviewViewModel {
     // resolution; the sandbox may deny that access, which is expected and not treated as an error.
     func present(html: String, baseURL: URL?, rawText: String) {
         self.rawText = rawText
-        page.load(html: html, baseURL: baseURL ?? URL(string: "about:blank")!)
+        page.load(html: html, baseURL: baseURL ?? aboutBlankURL)
     }
 }
 
@@ -49,7 +53,10 @@ private final class NavigationGate: WebPage.NavigationDeciding {
         if action.navigationType == .linkActivated {
             return .cancel
         }
-        if let scheme = action.request.url?.scheme?.lowercased(), scheme == "http" || scheme == "https" {
+        // Permit only the local content load. Remote schemes and data:/blob: URIs are never needed
+        // by the preview, so refusing them keeps the surface read-only as a matter of defence in depth.
+        if let scheme = action.request.url?.scheme?.lowercased(),
+           scheme == "http" || scheme == "https" || scheme == "data" || scheme == "blob" {
             return .cancel
         }
         return .allow
