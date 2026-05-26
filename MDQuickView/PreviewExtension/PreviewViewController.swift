@@ -7,42 +7,104 @@
 
 import Cocoa
 import Quartz
-import WebKit
+import SwiftUI
 
 // Quick Look preview controller for Markdown files.
-// Builds its view in code rather than from the template nib: the entire surface is a
-// WKWebView that renders the document model's self-contained HTML.
+// Builds its view in code: a compact header carrying the native mode selector sits
+// above a content area that holds all three mode surfaces at once. Switching modes
+// only toggles visibility, so it never reparses or reloads the document.
 @MainActor
-final class PreviewViewController: NSViewController, QLPreviewingController, WKNavigationDelegate {
+final class PreviewViewController: NSViewController, QLPreviewingController {
 
-    // Tracks whether the single programmatic content load has happened, so the navigation
-    // policy can allow it once and refuse every navigation that follows.
-    private var hasLoadedContent = false
+    // Preview mode surface.
+    private let previewWebView = PreviewWebView()
 
-    // The web view that renders the document model's HTML.
-    // Initialised at declaration so the configuration and JavaScript-disabled state are
-    // set once; loadView only needs to install it as the controller's view.
-    private let webView: WKWebView = {
-        let configuration = WKWebViewConfiguration()
+    // Raw mode surface.
+    private let rawView = RawTextView()
 
-        // No script execution: this is a read-only preview and a hard requirement for
-        // App Review. allowsContentJavaScript is the supported control on macOS 15.
-        configuration.defaultWebpagePreferences.allowsContentJavaScript = false
+    // Side-by-side surfaces, distinct instances sharing the same model data.
+    private let sideRawView = RawTextView()
+    private let sideWebView = PreviewWebView()
+    private let splitView = NSSplitView()
 
-        let webView = WKWebView(frame: .zero, configuration: configuration)
-        webView.autoresizingMask = [.width, .height]
-        return webView
-    }()
+    // Holds the three mode surfaces stacked on top of one another.
+    private let contentContainer = NSView()
+
+    // Ensures the split divider is centred once, after the view has a real width.
+    private var hasCentredDivider = false
 
     // Building the view programmatically; the template nib is unused.
     override var nibName: NSNib.Name? {
         nil
     }
 
-    // Installs the web view as the controller's view and takes over its navigation policy.
     override func loadView() {
-        webView.navigationDelegate = self
-        view = webView
+        let container = NSView()
+
+        let header = NSHostingView(
+            rootView: PreviewModeSelector { [weak self] mode in
+                self?.apply(mode)
+            }
+        )
+        header.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(header)
+
+        contentContainer.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(contentContainer)
+
+        NSLayoutConstraint.activate([
+            header.topAnchor.constraint(equalTo: container.topAnchor, constant: 8),
+            header.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+
+            contentContainer.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 8),
+            contentContainer.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            contentContainer.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            contentContainer.bottomAnchor.constraint(equalTo: container.bottomAnchor)
+        ])
+
+        configureSplitView()
+        installModeSurfaces()
+        apply(.preview)
+
+        view = container
+    }
+
+    // Arranges the raw source (left) and rendered preview (right) in a native split view.
+    private func configureSplitView() {
+        splitView.isVertical = true
+        splitView.dividerStyle = .thin
+        splitView.addArrangedSubview(sideRawView)
+        splitView.addArrangedSubview(sideWebView)
+    }
+
+    // Pins each mode surface to fill the content area; visibility selects the active one.
+    private func installModeSurfaces() {
+        for surface in [previewWebView, rawView, splitView] as [NSView] {
+            surface.translatesAutoresizingMaskIntoConstraints = false
+            contentContainer.addSubview(surface)
+            NSLayoutConstraint.activate([
+                surface.topAnchor.constraint(equalTo: contentContainer.topAnchor),
+                surface.leadingAnchor.constraint(equalTo: contentContainer.leadingAnchor),
+                surface.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor),
+                surface.bottomAnchor.constraint(equalTo: contentContainer.bottomAnchor)
+            ])
+        }
+    }
+
+    // Shows the surface for the selected mode and hides the others.
+    private func apply(_ mode: PreviewMode) {
+        previewWebView.isHidden = mode != .preview
+        rawView.isHidden = mode != .raw
+        splitView.isHidden = mode != .sideBySide
+    }
+
+    // Centres the split divider once the content area has a non-zero width.
+    override func viewDidLayout() {
+        super.viewDidLayout()
+        if !hasCentredDivider && splitView.bounds.width > 0 {
+            splitView.setPosition(splitView.bounds.width / 2, ofDividerAt: 0)
+            hasCentredDivider = true
+        }
     }
 
     func preparePreviewOfFile(at url: URL) async throws {
@@ -50,30 +112,22 @@ final class PreviewViewController: NSViewController, QLPreviewingController, WKN
             let model = try await MarkdownDocumentModel.load(from: url)
 
             // The parent directory is the base for best-effort relative image resolution.
-            // The sandbox may deny this access; that is expected and not treated as an error.
             let baseURL = url.deletingLastPathComponent()
-            webView.loadHTMLString(model.renderedHTML, baseURL: baseURL)
+
+            // Every surface is populated once from the single parsed model, so switching
+            // modes later toggles visibility without reparsing or reloading.
+            previewWebView.loadDocument(model.renderedHTML, baseURL: baseURL)
+            sideWebView.loadDocument(model.renderedHTML, baseURL: baseURL)
+            rawView.display(model.sourceText)
+            sideRawView.display(model.sourceText)
         } catch {
             // A parse or read failure shows an inline message rather than surfacing
             // Quick Look's generic failure UI.
             let html = HTMLBuilder.errorDocument(
                 message: "This Markdown file could not be previewed."
             )
-            webView.loadHTMLString(html, baseURL: nil)
+            previewWebView.loadDocument(html, baseURL: nil)
+            sideWebView.loadDocument(html, baseURL: nil)
         }
-    }
-
-    // Allows only the initial programmatic content load and cancels everything else.
-    // CSP restricts subresource loading but not top-level navigation, so without this a
-    // link click would carry the read-only preview to arbitrary, network-backed content.
-    func webView(
-        _ webView: WKWebView,
-        decidePolicyFor navigationAction: WKNavigationAction
-    ) async -> WKNavigationActionPolicy {
-        if navigationAction.navigationType == .other && !hasLoadedContent {
-            hasLoadedContent = true
-            return .allow
-        }
-        return .cancel
     }
 }
