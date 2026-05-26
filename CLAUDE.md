@@ -4,7 +4,7 @@ Guidance for Claude when working in this repository.
 
 ## Project
 
-**MDQuickView** — a macOS Quick Look extension for Markdown files, distributed via the Mac App Store. Press Space on a `.md` file in Finder → polished preview with YAML front matter table and three viewing modes (Preview / Raw / Side-by-side).
+**MDQuickView** — a macOS Quick Look extension for Markdown files, distributed via the Mac App Store. Press Space on a `.md` file in Finder → polished preview with YAML front matter table and two viewing modes (Preview / Raw).
 
 Authoritative spec: `Docs/01-mdquickview_technical_spec.md` (located outside this repo at `/Users/turek/Documents/Claude/Projects/MDQuickView/Docs/`). Always consult it before making architectural decisions.
 
@@ -22,12 +22,12 @@ Three targets sharing one body of code:
 | Target | Role |
 |---|---|
 | `MDQuickView` | Minimal SwiftUI host app — exists to register the extensions |
-| `PreviewExtension.appex` | Quick Look preview with the three modes |
+| `PreviewExtension.appex` | Quick Look preview with the two modes |
 | `ThumbnailExtension.appex` | Finder thumbnails |
 
 Shared code lives in `MDQuickView/Shared/` and is added to all three targets via shared source membership. When adding a new shared file, add it to all three target memberships in the Xcode project.
 
-Single parsed model (`MarkdownDocumentModel`) backs all three preview modes. Parse once per file open; mode switching must not reparse.
+Single parsed model (`MarkdownDocumentModel`) backs both preview modes. Parse once per file open; mode switching must not reparse.
 
 ## Pipeline (do not reorder)
 
@@ -36,7 +36,7 @@ Single parsed model (`MarkdownDocumentModel`) backs all three preview modes. Par
 3. Preserve the original full source for Raw mode (do not normalize).
 4. Pass the body (front matter stripped) to `cmark-gfm`.
 5. Wrap the HTML fragment in a full document with inlined CSS — no external assets.
-6. Bind the result into the three UI modes from the single shared model.
+6. Bind the result into both UI modes from the single shared model.
 
 `cmark-gfm` does NOT parse front matter. Front matter handling is our code, always before the renderer.
 
@@ -48,10 +48,11 @@ Single parsed model (`MarkdownDocumentModel`) backs all three preview modes. Par
 
 ## UI conventions
 
-- Mode switch is a **native segmented control** (`Picker` with `.segmented` style, or `NSSegmentedControl`). Default selection: `Preview`. No custom skinning.
+- Two modes: Preview, Raw — native segmented control, default: Preview.
+- Mode switch is a **native segmented control** (`Picker` with `.segmented` style). No custom skinning.
 - Rendered pane = WebKit with fully inlined CSS, `color-scheme` set for light/dark.
 - Raw pane = native AppKit text view, monospaced, selectable.
-- Side-by-side = native split view; independent scrolling is fine for v1.
+- Both panes stay mounted at all times; the WebView is kept full-size and topmost and only made transparent/non-interactive when Raw is active, so WebKit never suspends it and switching is instant. Do not hide it or collapse its frame to zero — that re-suspends the web process.
 
 ## Sandbox reality
 

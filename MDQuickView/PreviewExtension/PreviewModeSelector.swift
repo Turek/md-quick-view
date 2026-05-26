@@ -1,10 +1,9 @@
 import SwiftUI
 
-// The three viewing modes offered by the preview, in segmented-control order.
+// The two viewing modes offered by the preview, in segmented-control order.
 enum PreviewMode: Int, CaseIterable, Identifiable {
     case preview
     case raw
-    case sideBySide
 
     var id: Int { rawValue }
 
@@ -13,21 +12,17 @@ enum PreviewMode: Int, CaseIterable, Identifiable {
         switch self {
         case .preview: return "Preview"
         case .raw: return "Raw"
-        case .sideBySide: return "Side-by-side"
         }
     }
 }
 
-// A native segmented control for switching between the three viewing modes.
-// Renders as a standard macOS segmented Picker with no custom styling and reports
-// every selection change to the hosting controller.
+// A native segmented control for switching between the two viewing modes.
+// Renders as a standard macOS segmented Picker with no custom styling, bound directly to the
+// caller's selection.
 struct PreviewModeSelector: View {
 
-    // Defaults to Preview, matching the required initial selection.
-    @State private var mode: PreviewMode = .preview
-
-    // Invoked on the main actor whenever the user picks a different mode.
-    let onModeChange: @MainActor (PreviewMode) -> Void
+    // The current selection, owned by the hosting view.
+    @Binding var mode: PreviewMode
 
     var body: some View {
         Picker("View mode", selection: $mode) {
@@ -41,8 +36,5 @@ struct PreviewModeSelector: View {
         .labelsHidden()
         .fixedSize()
         .accessibilityLabel("View mode")
-        .onChange(of: mode) { _, newValue in
-            onModeChange(newValue)
-        }
     }
 }
