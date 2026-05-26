@@ -43,7 +43,9 @@ nonisolated struct MarkdownDocumentModel: Sendable, Equatable {
     private static let maximumFileSize = 10 * 1024 * 1024
 
     // Reads, parses, and renders a Markdown file into a complete model.
-    static func load(from url: URL) throws -> MarkdownDocumentModel {
+    // Declared async and nonisolated so that callers on the main actor await it and the
+    // blocking file read runs on the cooperative thread pool, never stalling the UI thread.
+    static func load(from url: URL) async throws -> MarkdownDocumentModel {
         let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
         guard size <= maximumFileSize else {
             throw CocoaError(.fileReadTooLarge)
