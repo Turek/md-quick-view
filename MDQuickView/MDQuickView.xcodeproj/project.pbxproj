@@ -21,6 +21,9 @@
 		7771508D2FC59BF100A886DC /* FrontMatterParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777150852FC59AE900A886DC /* FrontMatterParser.swift */; };
 		7771508E2FC59BF100A886DC /* FrontMatterParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777150852FC59AE900A886DC /* FrontMatterParser.swift */; };
 		7771508F2FC59BF100A886DC /* FrontMatterParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777150852FC59AE900A886DC /* FrontMatterParser.swift */; };
+		FACE0000000000000000F002 /* ThumbnailTitleResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000F001 /* ThumbnailTitleResolver.swift */; };
+		FACE0000000000000000F003 /* ThumbnailTitleResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000F001 /* ThumbnailTitleResolver.swift */; };
+		FACE0000000000000000F004 /* ThumbnailTitleResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000F001 /* ThumbnailTitleResolver.swift */; };
 		777150902FC59BF700A886DC /* MarkdownRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777150862FC59AF200A886DC /* MarkdownRenderer.swift */; };
 		777150912FC59BF700A886DC /* MarkdownRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777150862FC59AF200A886DC /* MarkdownRenderer.swift */; };
 		777150922FC59BF700A886DC /* MarkdownRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777150862FC59AF200A886DC /* MarkdownRenderer.swift */; };
@@ -39,6 +42,7 @@
 		AAAA0000000000000000AA06 /* RawTextViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA0000000000000000AA05 /* RawTextViewTests.swift */; };
 		94844A7768CC6A6CE6FFFB70 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDAFF9153444EE7A703227E6 /* Cocoa.framework */; };
 		B1794595FD14D0BF1E835CBF /* FrontMatterParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8AB5FBBA464F031E2370E0 /* FrontMatterParserTests.swift */; };
+		FACE0000000000000000F006 /* ThumbnailTitleResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000F005 /* ThumbnailTitleResolverTests.swift */; };
 		B1794596FD14D0BF1E835CBF /* MarkdownRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8AB5FCBA464F031E2370E0 /* MarkdownRendererTests.swift */; };
 		B1794597FD14D0BF1E835CBF /* DocumentModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8AB5FDBA464F031E2370E0 /* DocumentModelTests.swift */; };
 		B1794598FD14D0BF1E835CBF /* HTMLBuilderErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8AB5FEBA464F031E2370E0 /* HTMLBuilderErrorTests.swift */; };
@@ -92,6 +96,7 @@
 		7771506E2FC5956200A886DC /* QuickLookThumbnailing.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLookThumbnailing.framework; path = System/Library/Frameworks/QuickLookThumbnailing.framework; sourceTree = SDKROOT; };
 		777150842FC59AD800A886DC /* DocumentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentModel.swift; sourceTree = "<group>"; };
 		777150852FC59AE900A886DC /* FrontMatterParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrontMatterParser.swift; sourceTree = "<group>"; };
+		FACE0000000000000000F001 /* ThumbnailTitleResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailTitleResolver.swift; sourceTree = "<group>"; };
 		777150862FC59AF200A886DC /* MarkdownRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownRenderer.swift; sourceTree = "<group>"; };
 		777150872FC59AF900A886DC /* HTMLBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLBuilder.swift; sourceTree = "<group>"; };
 		777150882FC59B0100A886DC /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -99,6 +104,7 @@
 		AAAA0000000000000000AA01 /* RawTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawTextView.swift; sourceTree = "<group>"; };
 		DDAFF9153444EE7A703227E6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		FE8AB5FBBA464F031E2370E0 /* FrontMatterParserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FrontMatterParserTests.swift; sourceTree = "<group>"; };
+		FACE0000000000000000F005 /* ThumbnailTitleResolverTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThumbnailTitleResolverTests.swift; sourceTree = "<group>"; };
 		FE8AB5FCBA464F031E2370E0 /* MarkdownRendererTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarkdownRendererTests.swift; sourceTree = "<group>"; };
 		FE8AB5FDBA464F031E2370E0 /* DocumentModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DocumentModelTests.swift; sourceTree = "<group>"; };
 		FE8AB5FEBA464F031E2370E0 /* HTMLBuilderErrorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HTMLBuilderErrorTests.swift; sourceTree = "<group>"; };
@@ -238,6 +244,7 @@
 				777150872FC59AF900A886DC /* HTMLBuilder.swift */,
 				777150862FC59AF200A886DC /* MarkdownRenderer.swift */,
 				777150852FC59AE900A886DC /* FrontMatterParser.swift */,
+				FACE0000000000000000F001 /* ThumbnailTitleResolver.swift */,
 				777150842FC59AD800A886DC /* DocumentModel.swift */,
 			);
 			path = Shared;
@@ -248,6 +255,7 @@
 			children = (
 				AAAA0000000000000000AA05 /* RawTextViewTests.swift */,
 				FE8AB5FBBA464F031E2370E0 /* FrontMatterParserTests.swift */,
+				FACE0000000000000000F005 /* ThumbnailTitleResolverTests.swift */,
 				FE8AB5FCBA464F031E2370E0 /* MarkdownRendererTests.swift */,
 				FE8AB5FDBA464F031E2370E0 /* DocumentModelTests.swift */,
 				FE8AB5FEBA464F031E2370E0 /* HTMLBuilderErrorTests.swift */,
@@ -434,6 +442,7 @@
 				777150932FC59BFC00A886DC /* HTMLBuilder.swift in Sources */,
 				777150902FC59BF700A886DC /* MarkdownRenderer.swift in Sources */,
 				7771508D2FC59BF100A886DC /* FrontMatterParser.swift in Sources */,
+				FACE0000000000000000F002 /* ThumbnailTitleResolver.swift in Sources */,
 				777150992FC59C0900A886DC /* RawTextFormatter.swift in Sources */,
 				AAAA0000000000000000AA02 /* RawTextView.swift in Sources */,
 				7771508A2FC59BEA00A886DC /* DocumentModel.swift in Sources */,
@@ -448,6 +457,7 @@
 				777150942FC59BFC00A886DC /* HTMLBuilder.swift in Sources */,
 				777150912FC59BF700A886DC /* MarkdownRenderer.swift in Sources */,
 				7771508E2FC59BF100A886DC /* FrontMatterParser.swift in Sources */,
+				FACE0000000000000000F003 /* ThumbnailTitleResolver.swift in Sources */,
 				7771509A2FC59C0900A886DC /* RawTextFormatter.swift in Sources */,
 				AAAA0000000000000000AA03 /* RawTextView.swift in Sources */,
 				7771508B2FC59BEA00A886DC /* DocumentModel.swift in Sources */,
@@ -465,6 +475,7 @@
 				7771508C2FC59BEA00A886DC /* DocumentModel.swift in Sources */,
 				777150982FC59C0300A886DC /* Theme.swift in Sources */,
 				7771508F2FC59BF100A886DC /* FrontMatterParser.swift in Sources */,
+				FACE0000000000000000F004 /* ThumbnailTitleResolver.swift in Sources */,
 				777150922FC59BF700A886DC /* MarkdownRenderer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -475,6 +486,7 @@
 			files = (
 				AAAA0000000000000000AA06 /* RawTextViewTests.swift in Sources */,
 				B1794595FD14D0BF1E835CBF /* FrontMatterParserTests.swift in Sources */,
+				FACE0000000000000000F006 /* ThumbnailTitleResolverTests.swift in Sources */,
 				B1794596FD14D0BF1E835CBF /* MarkdownRendererTests.swift in Sources */,
 				B1794597FD14D0BF1E835CBF /* DocumentModelTests.swift in Sources */,
 				B1794598FD14D0BF1E835CBF /* HTMLBuilderErrorTests.swift in Sources */,
