@@ -1,0 +1,115 @@
+name: PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+    paths:
+      - 'MDQuickView/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  cloud-claude:
+    if: ${{ vars.CLAUDE_PR_REVIEW_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Load prompt
+        id: prompt
+        run: |
+          {
+            echo 'value<<OLLAMA_FALLBACK_PROMPT_EOF'
+            cat .github/prompts/pr-review.md
+            echo 'OLLAMA_FALLBACK_PROMPT_EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          track_progress: true
+          prompt: ${{ steps.prompt.outputs.value }}
+          claude_args: "--max-turns 20"
+
+  cloud-gemini:
+    if: ${{ vars.GEMINI_PR_REVIEW_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      GEMINI_MODEL: gemini-2.5-pro
+      MAX_DIFF_BYTES: 100000
+      GEMINI_IN_USD_PER_M: ${{ vars.GEMINI_IN_USD_PER_M }}
+      GEMINI_OUT_USD_PER_M: ${{ vars.GEMINI_OUT_USD_PER_M }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute PR diff
+        run: |
+          git diff --no-color \
+            "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" \
+            > "$RUNNER_TEMP/pr.diff"
+          head -c "$MAX_DIFF_BYTES" "$RUNNER_TEMP/pr.diff" > "$RUNNER_TEMP/pr.diff.truncated"
+
+      - name: Build Gemini request
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          jq -n \
+            --rawfile system .github/prompts/pr-review.md \
+            --arg title "$PR_TITLE" \
+            --arg body "${PR_BODY:-(no description)}" \
+            --rawfile diff "$RUNNER_TEMP/pr.diff.truncated" \
+            '{
+              systemInstruction: { parts: [ { text: $system } ] },
+              contents: [
+                { role: "user", parts: [ { text: ("# PR Title\n" + $title + "\n\n# PR Body\n" + $body + "\n\n# Unified Diff\n```diff\n" + $diff + "\n```") } ] }
+              ],
+              generationConfig: { temperature: 0.2, maxOutputTokens: 8192 }
+            }' > "$RUNNER_TEMP/req.json"
+
+      - name: Run Gemini review
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          curl -sS --fail-with-body -X POST \
+            "https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d @"$RUNNER_TEMP/req.json" > "$RUNNER_TEMP/resp.json"
+          jq -r '.candidates[0].content.parts[0].text' "$RUNNER_TEMP/resp.json" > "$RUNNER_TEMP/review.md"
+          if [ ! -s "$RUNNER_TEMP/review.md" ]; then
+            echo "Empty review output."
+            cat "$RUNNER_TEMP/resp.json"
+            exit 1
+          fi
+
+      - name: Append usage footer
+        run: |
+          PROMPT_TOKENS=$(jq -r '.usageMetadata.promptTokenCount // 0' "$RUNNER_TEMP/resp.json")
+          COMPLETION_TOKENS=$(jq -r '.usageMetadata.candidatesTokenCount // 0' "$RUNNER_TEMP/resp.json")
+          IN_COST=$(awk "BEGIN { printf \"%.4f\", $PROMPT_TOKENS * $GEMINI_IN_USD_PER_M / 1000000 }")
+          OUT_COST=$(awk "BEGIN { printf \"%.4f\", $COMPLETION_TOKENS * $GEMINI_OUT_USD_PER_M / 1000000 }")
+          TOTAL_COST=$(awk "BEGIN { printf \"%.4f\", $IN_COST + $OUT_COST }")
+          {
+            echo ""
+            echo "---"
+            echo "_Gemini review by \`${GEMINI_MODEL}\` — ${PROMPT_TOKENS} in / ${COMPLETION_TOKENS} out tokens. Cost (\$${GEMINI_IN_USD_PER_M}/M in, \$${GEMINI_OUT_USD_PER_M}/M out): \$${TOTAL_COST}._"
+          } >> "$RUNNER_TEMP/review.md"
+
+      - name: Post review comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --repo "${{ github.repository }}" \
+            --body-file "$RUNNER_TEMP/review.md"
