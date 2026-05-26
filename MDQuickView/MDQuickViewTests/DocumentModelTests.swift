@@ -21,18 +21,18 @@ struct DocumentModelTests {
         return url
     }
 
-    @Test func loadsValidUTF8Markdown() throws {
+    @Test func loadsValidUTF8Markdown() async throws {
         let url = try makeTemporaryFile("# Title\n\nSome **bold** body text.\n")
         defer { try? FileManager.default.removeItem(at: url) }
 
-        let model = try MarkdownDocumentModel.load(from: url)
+        let model = try await MarkdownDocumentModel.load(from: url)
 
         #expect(model.sourceText.contains("# Title"))
         #expect(model.fileURL == url)
         #expect(model.markdownBody.contains("Some **bold** body text."))
     }
 
-    @Test func populatesFrontMatterFields() throws {
+    @Test func populatesFrontMatterFields() async throws {
         let url = try makeTemporaryFile("""
         ---
         title: Hello
@@ -42,13 +42,13 @@ struct DocumentModelTests {
         """)
         defer { try? FileManager.default.removeItem(at: url) }
 
-        let model = try MarkdownDocumentModel.load(from: url)
+        let model = try await MarkdownDocumentModel.load(from: url)
 
         #expect(model.frontMatterFields.contains { $0.key == "title" && $0.value == "Hello" })
         #expect(model.frontMatterFields.contains { $0.key == "tags" && $0.value == "a, b" })
     }
 
-    @Test func markdownBodyExcludesFrontMatterDelimiters() throws {
+    @Test func markdownBodyExcludesFrontMatterDelimiters() async throws {
         let url = try makeTemporaryFile("""
         ---
         title: Hello
@@ -57,52 +57,52 @@ struct DocumentModelTests {
         """)
         defer { try? FileManager.default.removeItem(at: url) }
 
-        let model = try MarkdownDocumentModel.load(from: url)
+        let model = try await MarkdownDocumentModel.load(from: url)
 
         #expect(!model.markdownBody.contains("---"))
         #expect(!model.markdownBody.contains("title: Hello"))
         #expect(model.markdownBody.contains("Body line."))
     }
 
-    @Test func renderedHTMLIsNonEmptyForNonEmptyBody() throws {
+    @Test func renderedHTMLIsNonEmptyForNonEmptyBody() async throws {
         let url = try makeTemporaryFile("# Heading\n\nParagraph.\n")
         defer { try? FileManager.default.removeItem(at: url) }
 
-        let model = try MarkdownDocumentModel.load(from: url)
+        let model = try await MarkdownDocumentModel.load(from: url)
 
         #expect(!model.renderedHTML.isEmpty)
         #expect(model.renderedHTML.contains("<h1"))
     }
 
-    @Test func stripsLeadingByteOrderMark() throws {
+    @Test func stripsLeadingByteOrderMark() async throws {
         let url = try makeTemporaryFile("\u{FEFF}# Title\n")
         defer { try? FileManager.default.removeItem(at: url) }
 
-        let model = try MarkdownDocumentModel.load(from: url)
+        let model = try await MarkdownDocumentModel.load(from: url)
 
         #expect(!model.sourceText.hasPrefix("\u{FEFF}"))
         #expect(model.sourceText.hasPrefix("# Title"))
     }
 
-    @Test func rejectsFileAboveSizeLimit() throws {
+    @Test func rejectsFileAboveSizeLimit() async throws {
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)
             .appendingPathExtension("md")
         try Data(count: 10 * 1024 * 1024 + 1).write(to: url)
         defer { try? FileManager.default.removeItem(at: url) }
 
-        #expect(throws: (any Error).self) {
-            _ = try MarkdownDocumentModel.load(from: url)
+        await #expect(throws: (any Error).self) {
+            _ = try await MarkdownDocumentModel.load(from: url)
         }
     }
 
-    @Test func loadingMissingFileThrows() {
+    @Test func loadingMissingFileThrows() async {
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)
             .appendingPathExtension("md")
 
-        #expect(throws: (any Error).self) {
-            _ = try MarkdownDocumentModel.load(from: url)
+        await #expect(throws: (any Error).self) {
+            _ = try await MarkdownDocumentModel.load(from: url)
         }
     }
 }
