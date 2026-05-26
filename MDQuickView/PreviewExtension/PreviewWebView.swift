@@ -32,6 +32,9 @@ final class PreviewWebView: WKWebView, WKNavigationDelegate {
     // The parent directory is the base for best-effort relative image resolution;
     // the sandbox may deny that access, which is expected and not treated as an error.
     func loadDocument(_ html: String, baseURL: URL?) {
+        // Reset so the navigation policy permits this load; a reused controller may
+        // load a second document into the same web view.
+        hasLoadedContent = false
         loadHTMLString(html, baseURL: baseURL)
     }
 
