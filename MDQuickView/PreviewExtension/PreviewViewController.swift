@@ -12,7 +12,12 @@ import WebKit
 // Quick Look preview controller for Markdown files.
 // Builds its view in code rather than from the template nib: the entire surface is a
 // WKWebView that renders the document model's self-contained HTML.
-class PreviewViewController: NSViewController, QLPreviewingController {
+@MainActor
+final class PreviewViewController: NSViewController, QLPreviewingController, WKNavigationDelegate {
+
+    // Tracks whether the single programmatic content load has happened, so the navigation
+    // policy can allow it once and refuse every navigation that follows.
+    private var hasLoadedContent = false
 
     // The web view that renders the document model's HTML.
     // Initialised at declaration so the configuration and JavaScript-disabled state are
@@ -34,8 +39,9 @@ class PreviewViewController: NSViewController, QLPreviewingController {
         nil
     }
 
-    // Installs the web view as the controller's view.
+    // Installs the web view as the controller's view and takes over its navigation policy.
     override func loadView() {
+        webView.navigationDelegate = self
         view = webView
     }
 
@@ -55,5 +61,19 @@ class PreviewViewController: NSViewController, QLPreviewingController {
             )
             webView.loadHTMLString(html, baseURL: nil)
         }
+    }
+
+    // Allows only the initial programmatic content load and cancels everything else.
+    // CSP restricts subresource loading but not top-level navigation, so without this a
+    // link click would carry the read-only preview to arbitrary, network-backed content.
+    func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction
+    ) async -> WKNavigationActionPolicy {
+        if navigationAction.navigationType == .other && !hasLoadedContent {
+            hasLoadedContent = true
+            return .allow
+        }
+        return .cancel
     }
 }
