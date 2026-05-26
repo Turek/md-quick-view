@@ -33,6 +33,10 @@
 		777150992FC59C0900A886DC /* RawTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777150892FC59B0800A886DC /* RawTextFormatter.swift */; };
 		7771509A2FC59C0900A886DC /* RawTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777150892FC59B0800A886DC /* RawTextFormatter.swift */; };
 		7771509B2FC59C0900A886DC /* RawTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777150892FC59B0800A886DC /* RawTextFormatter.swift */; };
+		AAAA0000000000000000AA02 /* RawTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA0000000000000000AA01 /* RawTextView.swift */; };
+		AAAA0000000000000000AA03 /* RawTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA0000000000000000AA01 /* RawTextView.swift */; };
+		AAAA0000000000000000AA04 /* RawTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA0000000000000000AA01 /* RawTextView.swift */; };
+		AAAA0000000000000000AA06 /* RawTextViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA0000000000000000AA05 /* RawTextViewTests.swift */; };
 		94844A7768CC6A6CE6FFFB70 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDAFF9153444EE7A703227E6 /* Cocoa.framework */; };
 		B1794595FD14D0BF1E835CBF /* FrontMatterParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8AB5FBBA464F031E2370E0 /* FrontMatterParserTests.swift */; };
 		B1794596FD14D0BF1E835CBF /* MarkdownRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8AB5FCBA464F031E2370E0 /* MarkdownRendererTests.swift */; };
@@ -92,11 +96,13 @@
 		777150872FC59AF900A886DC /* HTMLBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLBuilder.swift; sourceTree = "<group>"; };
 		777150882FC59B0100A886DC /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		777150892FC59B0800A886DC /* RawTextFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawTextFormatter.swift; sourceTree = "<group>"; };
+		AAAA0000000000000000AA01 /* RawTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawTextView.swift; sourceTree = "<group>"; };
 		DDAFF9153444EE7A703227E6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		FE8AB5FBBA464F031E2370E0 /* FrontMatterParserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FrontMatterParserTests.swift; sourceTree = "<group>"; };
 		FE8AB5FCBA464F031E2370E0 /* MarkdownRendererTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarkdownRendererTests.swift; sourceTree = "<group>"; };
 		FE8AB5FDBA464F031E2370E0 /* DocumentModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DocumentModelTests.swift; sourceTree = "<group>"; };
 		FE8AB5FEBA464F031E2370E0 /* HTMLBuilderErrorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HTMLBuilderErrorTests.swift; sourceTree = "<group>"; };
+		AAAA0000000000000000AA05 /* RawTextViewTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RawTextViewTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -226,6 +232,7 @@
 		777150832FC59AC500A886DC /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				AAAA0000000000000000AA01 /* RawTextView.swift */,
 				777150892FC59B0800A886DC /* RawTextFormatter.swift */,
 				777150882FC59B0100A886DC /* Theme.swift */,
 				777150872FC59AF900A886DC /* HTMLBuilder.swift */,
@@ -239,6 +246,7 @@
 		CD8FC74E4030061C079D7136 /* MDQuickViewTests */ = {
 			isa = PBXGroup;
 			children = (
+				AAAA0000000000000000AA05 /* RawTextViewTests.swift */,
 				FE8AB5FBBA464F031E2370E0 /* FrontMatterParserTests.swift */,
 				FE8AB5FCBA464F031E2370E0 /* MarkdownRendererTests.swift */,
 				FE8AB5FDBA464F031E2370E0 /* DocumentModelTests.swift */,
@@ -427,6 +435,7 @@
 				777150902FC59BF700A886DC /* MarkdownRenderer.swift in Sources */,
 				7771508D2FC59BF100A886DC /* FrontMatterParser.swift in Sources */,
 				777150992FC59C0900A886DC /* RawTextFormatter.swift in Sources */,
+				AAAA0000000000000000AA02 /* RawTextView.swift in Sources */,
 				7771508A2FC59BEA00A886DC /* DocumentModel.swift in Sources */,
 				777150962FC59C0300A886DC /* Theme.swift in Sources */,
 			);
@@ -440,6 +449,7 @@
 				777150912FC59BF700A886DC /* MarkdownRenderer.swift in Sources */,
 				7771508E2FC59BF100A886DC /* FrontMatterParser.swift in Sources */,
 				7771509A2FC59C0900A886DC /* RawTextFormatter.swift in Sources */,
+				AAAA0000000000000000AA03 /* RawTextView.swift in Sources */,
 				7771508B2FC59BEA00A886DC /* DocumentModel.swift in Sources */,
 				777150972FC59C0300A886DC /* Theme.swift in Sources */,
 			);
@@ -451,6 +461,7 @@
 			files = (
 				777150952FC59BFC00A886DC /* HTMLBuilder.swift in Sources */,
 				7771509B2FC59C0900A886DC /* RawTextFormatter.swift in Sources */,
+				AAAA0000000000000000AA04 /* RawTextView.swift in Sources */,
 				7771508C2FC59BEA00A886DC /* DocumentModel.swift in Sources */,
 				777150982FC59C0300A886DC /* Theme.swift in Sources */,
 				7771508F2FC59BF100A886DC /* FrontMatterParser.swift in Sources */,
@@ -462,6 +473,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAAA0000000000000000AA06 /* RawTextViewTests.swift in Sources */,
 				B1794595FD14D0BF1E835CBF /* FrontMatterParserTests.swift in Sources */,
 				B1794596FD14D0BF1E835CBF /* MarkdownRendererTests.swift in Sources */,
 				B1794597FD14D0BF1E835CBF /* DocumentModelTests.swift in Sources */,
