@@ -37,6 +37,7 @@
 		B1794595FD14D0BF1E835CBF /* FrontMatterParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8AB5FBBA464F031E2370E0 /* FrontMatterParserTests.swift */; };
 		B1794596FD14D0BF1E835CBF /* MarkdownRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8AB5FCBA464F031E2370E0 /* MarkdownRendererTests.swift */; };
 		B1794597FD14D0BF1E835CBF /* DocumentModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8AB5FDBA464F031E2370E0 /* DocumentModelTests.swift */; };
+		B1794598FD14D0BF1E835CBF /* HTMLBuilderErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8AB5FEBA464F031E2370E0 /* HTMLBuilderErrorTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,6 +96,7 @@
 		FE8AB5FBBA464F031E2370E0 /* FrontMatterParserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FrontMatterParserTests.swift; sourceTree = "<group>"; };
 		FE8AB5FCBA464F031E2370E0 /* MarkdownRendererTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarkdownRendererTests.swift; sourceTree = "<group>"; };
 		FE8AB5FDBA464F031E2370E0 /* DocumentModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DocumentModelTests.swift; sourceTree = "<group>"; };
+		FE8AB5FEBA464F031E2370E0 /* HTMLBuilderErrorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HTMLBuilderErrorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -240,6 +242,7 @@
 				FE8AB5FBBA464F031E2370E0 /* FrontMatterParserTests.swift */,
 				FE8AB5FCBA464F031E2370E0 /* MarkdownRendererTests.swift */,
 				FE8AB5FDBA464F031E2370E0 /* DocumentModelTests.swift */,
+				FE8AB5FEBA464F031E2370E0 /* HTMLBuilderErrorTests.swift */,
 			);
 			name = MDQuickViewTests;
 			path = MDQuickViewTests;
@@ -462,6 +465,7 @@
 				B1794595FD14D0BF1E835CBF /* FrontMatterParserTests.swift in Sources */,
 				B1794596FD14D0BF1E835CBF /* MarkdownRendererTests.swift in Sources */,
 				B1794597FD14D0BF1E835CBF /* DocumentModelTests.swift in Sources */,
+				B1794598FD14D0BF1E835CBF /* HTMLBuilderErrorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -58,6 +58,38 @@ enum HTMLBuilder {
         """ + "\n"
     }
 
+    // Builds a minimal self-contained page shown when a file cannot be previewed.
+    // The message is escaped because it may include a system error description.
+    nonisolated static func errorDocument(message: String) -> String {
+        """
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="color-scheme" content="light dark">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';">
+        <style>
+        :root { color-scheme: light dark; }
+        body {
+            font: -apple-system-body;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: GrayText;
+        }
+        p { margin: 2rem; text-align: center; }
+        </style>
+        </head>
+        <body>
+        <p>\(escape(message))</p>
+        </body>
+        </html>
+        """
+    }
+
     // Escapes characters that would otherwise be interpreted as HTML markup.
     // Front matter values are plain text and must never inject markup into the document.
     nonisolated private static func escape(_ text: String) -> String {
