@@ -95,11 +95,23 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
         }
     }
 
-    // Shows the surface for the selected mode and hides the others.
+    // Reveals the surface for the selected mode by bringing it to the front rather than hiding
+    // the others. Hiding a WebKit-backed pane gives it a zero frame, which suspends its web
+    // content and forces a slow resume and repaint on the next switch; keeping every surface
+    // mounted at full size leaves the rendered panes resident so switching is immediate. The
+    // active surface is opaque and fills the container, so it covers the ones behind it.
     private func apply(_ mode: PreviewMode) {
-        previewWebView.isHidden = mode != .preview
-        rawView.isHidden = mode != .raw
-        splitView.isHidden = mode != .sideBySide
+        let surfaces: [(view: NSView, isActive: Bool)] = [
+            (previewWebView, mode == .preview),
+            (rawView, mode == .raw),
+            (splitView, mode == .sideBySide)
+        ]
+        for surface in surfaces {
+            surface.view.setAccessibilityHidden(!surface.isActive)
+        }
+        if let active = surfaces.first(where: \.isActive)?.view {
+            contentContainer.addSubview(active, positioned: .above, relativeTo: nil)
+        }
     }
 
     // Centres the split divider once the content area has a non-zero width.

@@ -2,8 +2,9 @@ import AppKit
 
 // A scrollable, selectable, read-only surface that presents Markdown source verbatim
 // for the Raw viewing mode.
-// The text is shown without soft wrapping so that every line ending and run of
-// whitespace appears exactly as stored on disk; long lines extend horizontally.
+// The text is shown verbatim — every line ending and run of whitespace appears exactly as
+// stored on disk — with soft wrapping so long lines reflow to the visible width on narrow
+// screens instead of being clipped.
 final class RawTextView: NSView {
 
     // The scroll view that hosts the text view and provides scrolling.
@@ -41,27 +42,27 @@ final class RawTextView: NSView {
         textView.textContainerInset = NSSize(width: 8, height: 8)
         textView.setAccessibilityLabel("Markdown source")
 
-        // A container that does not track the view width disables soft wrapping, so the
-        // only line breaks shown are the ones present in the source.
+        // A container that tracks the view width enables soft wrapping, so long lines reflow
+        // to the visible width while the source's own line breaks remain intact.
         textView.isVerticallyResizable = true
-        textView.isHorizontallyResizable = true
+        textView.isHorizontallyResizable = false
         textView.autoresizingMask = [.width]
         textView.maxSize = NSSize(
             width: CGFloat.greatestFiniteMagnitude,
             height: CGFloat.greatestFiniteMagnitude
         )
         textView.textContainer?.containerSize = NSSize(
-            width: CGFloat.greatestFiniteMagnitude,
+            width: bounds.width,
             height: CGFloat.greatestFiniteMagnitude
         )
-        textView.textContainer?.widthTracksTextView = false
+        textView.textContainer?.widthTracksTextView = true
 
         textView.defaultParagraphStyle = Self.paragraphStyle
         textView.typingAttributes = Self.attributes
 
         scrollView.documentView = textView
         scrollView.hasVerticalScroller = true
-        scrollView.hasHorizontalScroller = true
+        scrollView.hasHorizontalScroller = false
         scrollView.autohidesScrollers = true
         scrollView.borderType = .noBorder
         scrollView.drawsBackground = true
