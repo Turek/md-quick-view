@@ -27,14 +27,4 @@ enum RawTextFormatter {
 
     // Background colour that resolves automatically for the current appearance.
     static var backgroundColor: NSColor { .textBackgroundColor }
-
-    // Explicit foreground colour for a light appearance.
-    static var lightTextColor: NSColor {
-        NSColor(srgbRed: 0.114, green: 0.114, blue: 0.122, alpha: 1)
-    }
-
-    // Explicit foreground colour for a dark appearance.
-    static var darkTextColor: NSColor {
-        NSColor(srgbRed: 0.961, green: 0.961, blue: 0.969, alpha: 1)
-    }
 }

@@ -74,6 +74,28 @@ struct DocumentModelTests {
         #expect(model.renderedHTML.contains("<h1"))
     }
 
+    @Test func stripsLeadingByteOrderMark() throws {
+        let url = try makeTemporaryFile("\u{FEFF}# Title\n")
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        let model = try MarkdownDocumentModel.load(from: url)
+
+        #expect(!model.sourceText.hasPrefix("\u{FEFF}"))
+        #expect(model.sourceText.hasPrefix("# Title"))
+    }
+
+    @Test func rejectsFileAboveSizeLimit() throws {
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathExtension("md")
+        try Data(count: 10 * 1024 * 1024 + 1).write(to: url)
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        #expect(throws: (any Error).self) {
+            _ = try MarkdownDocumentModel.load(from: url)
+        }
+    }
+
     @Test func loadingMissingFileThrows() {
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)
