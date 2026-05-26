@@ -173,10 +173,11 @@ enum ThumbnailRenderer {
         drawBadge(metrics: metrics)
     }
 
-    // Fills the rectangle with a neutral background colour that reads well in both
-    // light and dark Finder windows.
+    // Fills the rectangle with the system window background colour.
+    // Semantic colours resolve against NSAppearance.current, which the Quick Look
+    // system sets to match the Finder appearance, so the thumbnail follows dark mode.
     private static func drawBackground(in rect: CGRect) {
-        NSColor(red: 0.96, green: 0.96, blue: 0.97, alpha: 1.0).setFill()
+        NSColor.windowBackgroundColor.setFill()
         NSBezierPath(roundedRect: rect, xRadius: rect.width * 0.04, yRadius: rect.width * 0.04).fill()
     }
 
@@ -184,7 +185,7 @@ enum ThumbnailRenderer {
     // up to several lines and truncating with an ellipsis.
     private static func drawTitle(_ title: String, metrics: ThumbnailMetrics) {
         let font = NSFont.systemFont(ofSize: metrics.fontSize, weight: .semibold)
-        let textColor = NSColor(red: 0.12, green: 0.12, blue: 0.14, alpha: 1.0)
+        let textColor = NSColor.labelColor
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineBreakMode = .byTruncatingTail
@@ -203,7 +204,7 @@ enum ThumbnailRenderer {
     // Draws a subtle ".md" badge at the bottom of the thumbnail.
     private static func drawBadge(metrics: ThumbnailMetrics) {
         let font = NSFont.monospacedSystemFont(ofSize: metrics.badgeFontSize, weight: .regular)
-        let badgeColor = NSColor(red: 0.45, green: 0.45, blue: 0.50, alpha: 1.0)
+        let badgeColor = NSColor.secondaryLabelColor
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineBreakMode = .byClipping
