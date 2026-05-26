@@ -11,9 +11,9 @@ Authoritative spec: `Docs/01-mdquickview_technical_spec.md` (located outside thi
 ## Stack & constraints
 
 - **Swift 6**, strict concurrency enabled.
-- **macOS 15.0** minimum deployment target. Do not add fallbacks for older macOS — the legacy `.qlgenerator` model is deliberately unsupported.
+- **macOS 26.0** minimum deployment target. Do not add fallbacks for older macOS — the legacy `.qlgenerator` model is deliberately unsupported.
 - **Xcode 26**, automatic signing, sandboxed for App Store.
-- **No network access, no JavaScript execution, no file writes.** This is a read-only preview product. Keep it that way — it is load-bearing for App Review.
+- **No actual network use, no JavaScript execution, no file writes.** This is a read-only preview product. Keep it that way — it is load-bearing for App Review. Note: the extensions set `ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES` (synthesises `com.apple.security.network.client`) because WebKit's out-of-process Networking helper is sandbox-killed without it — the rendered panes show nothing otherwise. This entitlement is required by WebKit's process architecture, not because app code makes requests: JavaScript is disabled and every navigation but the local content load is refused. Do not remove it.
 
 ## Architecture
 
