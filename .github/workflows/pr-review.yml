@@ -16,7 +16,7 @@ jobs:
     if: ${{ vars.CLAUDE_PR_REVIEW_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -50,7 +50,7 @@ jobs:
       GEMINI_IN_USD_PER_M: ${{ vars.GEMINI_IN_USD_PER_M }}
       GEMINI_OUT_USD_PER_M: ${{ vars.GEMINI_OUT_USD_PER_M }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
