@@ -35,6 +35,7 @@
 		7771509B2FC59C0900A886DC /* RawTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777150892FC59B0800A886DC /* RawTextFormatter.swift */; };
 		94844A7768CC6A6CE6FFFB70 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDAFF9153444EE7A703227E6 /* Cocoa.framework */; };
 		B1794595FD14D0BF1E835CBF /* FrontMatterParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8AB5FBBA464F031E2370E0 /* FrontMatterParserTests.swift */; };
+		B1794596FD14D0BF1E835CBF /* MarkdownRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8AB5FCBA464F031E2370E0 /* MarkdownRendererTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +92,7 @@
 		777150892FC59B0800A886DC /* RawTextFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawTextFormatter.swift; sourceTree = "<group>"; };
 		DDAFF9153444EE7A703227E6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		FE8AB5FBBA464F031E2370E0 /* FrontMatterParserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FrontMatterParserTests.swift; sourceTree = "<group>"; };
+		FE8AB5FCBA464F031E2370E0 /* MarkdownRendererTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarkdownRendererTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -234,6 +236,7 @@
 			isa = PBXGroup;
 			children = (
 				FE8AB5FBBA464F031E2370E0 /* FrontMatterParserTests.swift */,
+				FE8AB5FCBA464F031E2370E0 /* MarkdownRendererTests.swift */,
 			);
 			name = MDQuickViewTests;
 			path = MDQuickViewTests;
@@ -454,6 +457,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B1794595FD14D0BF1E835CBF /* FrontMatterParserTests.swift in Sources */,
+				B1794596FD14D0BF1E835CBF /* MarkdownRendererTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
