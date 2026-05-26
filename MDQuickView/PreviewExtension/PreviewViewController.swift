@@ -69,10 +69,14 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
         view = container
     }
 
+    // The smallest width either split pane may occupy, so neither can collapse to zero.
+    private static let minimumPaneWidth: CGFloat = 80
+
     // Arranges the raw source (left) and rendered preview (right) in a native split view.
     private func configureSplitView() {
         splitView.isVertical = true
         splitView.dividerStyle = .thin
+        splitView.delegate = self
         splitView.addArrangedSubview(sideRawView)
         splitView.addArrangedSubview(sideWebView)
     }
@@ -128,6 +132,32 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
             )
             previewWebView.loadDocument(html, baseURL: nil)
             sideWebView.loadDocument(html, baseURL: nil)
+
+            // Clear the raw surfaces so a reused controller cannot show stale source
+            // from a previous file alongside the error document.
+            rawView.display("")
+            sideRawView.display("")
         }
+    }
+}
+
+extension PreviewViewController: NSSplitViewDelegate {
+
+    // Keeps the left pane from collapsing below the minimum width.
+    func splitView(
+        _ splitView: NSSplitView,
+        constrainMinCoordinate proposedMinimumPosition: CGFloat,
+        ofSubviewAt dividerIndex: Int
+    ) -> CGFloat {
+        max(proposedMinimumPosition, Self.minimumPaneWidth)
+    }
+
+    // Keeps the right pane from collapsing below the minimum width.
+    func splitView(
+        _ splitView: NSSplitView,
+        constrainMaxCoordinate proposedMaximumPosition: CGFloat,
+        ofSubviewAt dividerIndex: Int
+    ) -> CGFloat {
+        min(proposedMaximumPosition, splitView.bounds.width - Self.minimumPaneWidth)
     }
 }
