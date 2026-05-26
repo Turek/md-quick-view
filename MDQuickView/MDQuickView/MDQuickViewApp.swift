@@ -10,8 +10,10 @@ import SwiftUI
 @main
 struct MDQuickViewApp: App {
     var body: some Scene {
-        WindowGroup {
+        // Single, minimal window sized to its content.
+        Window("MDQuickView", id: "main") {
             ContentView()
         }
+        .windowResizability(.contentSize)
     }
 }
