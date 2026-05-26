@@ -110,6 +110,7 @@ enum FrontMatterParser {
     nonisolated private static func formatScalar(_ value: String) -> String {
         if value.hasPrefix("[") && value.hasSuffix("]") {
             let inner = value.dropFirst().dropLast()
+            // Simple comma split: quoted elements containing commas are not supported in v1.
             let elements = inner
                 .split(separator: ",")
                 .map { unquote($0.trimmingCharacters(in: .whitespacesAndNewlines)) }
