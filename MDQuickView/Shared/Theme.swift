@@ -148,13 +148,16 @@ enum Theme {
       background: var(--code-bg);
       padding: 12px 14px;
       border-radius: 6px;
-      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: anywhere;
     }
 
     .markdown-body pre code {
       background: none;
       padding: 0;
       font-size: 0.85em;
+      white-space: inherit;
     }
 
     .markdown-body blockquote {

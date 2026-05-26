@@ -2,36 +2,38 @@
 //  PreviewViewController.swift
 //  PreviewExtension
 //
-//  Created by Turek on 26/05/2026.
-//
 
 import Cocoa
 import Quartz
 import SwiftUI
 
 // Quick Look preview controller for Markdown files.
-// Builds its view in code: a compact header carrying the native mode selector sits
-// above a content area that holds all three mode surfaces at once. Switching modes
-// only toggles visibility, so it never reparses or reloads the document.
+// Builds its view in code: a compact header carrying the native mode selector sits above a
+// single split view whose left pane is the raw source and whose right pane is the rendered
+// document. The three modes are expressed purely as divider positions — raw collapsed for
+// Preview, centred for Side-by-side, rendered collapsed for Raw — so there is exactly one
+// rendered web view and exactly one raw view. Switching between Preview and Side-by-side never
+// collapses the rendered pane, so its web content stays foreground and the switch is immediate.
 @MainActor
 final class PreviewViewController: NSViewController, QLPreviewingController {
 
-    // Preview mode surface.
-    private let previewWebView = PreviewWebView()
-
-    // Raw mode surface.
+    // The raw source surface; occupies the left split pane.
     private let rawView = RawTextView()
 
-    // Side-by-side surfaces, distinct instances sharing the same model data.
-    private let sideRawView = RawTextView()
-    private let sideWebView = PreviewWebView()
+    // The rendered surface; occupies the right split pane.
+    private let webView = PreviewWebView()
+
+    // Hosts the two panes; the divider position alone selects the active mode.
     private let splitView = NSSplitView()
 
-    // Holds the three mode surfaces stacked on top of one another.
-    private let contentContainer = NSView()
+    // The mode currently shown, so layout can restore its divider position.
+    private var currentMode: PreviewMode = .preview
 
-    // Ensures the split divider is centred once, after the view has a real width.
-    private var hasCentredDivider = false
+    // Set once the split view has a real width, after which divider moves are meaningful.
+    private var hasLaidOut = false
+
+    // The smallest width either pane may occupy while dragging in Side-by-side mode.
+    private static let minimumPaneWidth: CGFloat = 80
 
     // Building the view programmatically; the template nib is unused.
     override var nibName: NSNib.Name? {
@@ -49,77 +51,57 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
         header.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(header)
 
-        contentContainer.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(contentContainer)
+        splitView.isVertical = true
+        splitView.dividerStyle = .thin
+        splitView.delegate = self
+        splitView.addArrangedSubview(rawView)
+        splitView.addArrangedSubview(webView)
+        splitView.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(splitView)
 
         NSLayoutConstraint.activate([
             header.topAnchor.constraint(equalTo: container.topAnchor, constant: 8),
             header.centerXAnchor.constraint(equalTo: container.centerXAnchor),
 
-            contentContainer.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 8),
-            contentContainer.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            contentContainer.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            contentContainer.bottomAnchor.constraint(equalTo: container.bottomAnchor)
+            splitView.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 8),
+            splitView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            splitView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            splitView.bottomAnchor.constraint(equalTo: container.bottomAnchor)
         ])
-
-        configureSplitView()
-        installModeSurfaces()
-        apply(.preview)
 
         view = container
     }
 
-    // The smallest width either split pane may occupy, so neither can collapse to zero.
-    private static let minimumPaneWidth: CGFloat = 80
-
-    // Arranges the raw source (left) and rendered preview (right) in a native split view.
-    private func configureSplitView() {
-        splitView.isVertical = true
-        splitView.dividerStyle = .thin
-        splitView.delegate = self
-        splitView.addArrangedSubview(sideRawView)
-        splitView.addArrangedSubview(sideWebView)
-    }
-
-    // Pins each mode surface to fill the content area; visibility selects the active one.
-    private func installModeSurfaces() {
-        for surface in [previewWebView, rawView, splitView] as [NSView] {
-            surface.translatesAutoresizingMaskIntoConstraints = false
-            contentContainer.addSubview(surface)
-            NSLayoutConstraint.activate([
-                surface.topAnchor.constraint(equalTo: contentContainer.topAnchor),
-                surface.leadingAnchor.constraint(equalTo: contentContainer.leadingAnchor),
-                surface.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor),
-                surface.bottomAnchor.constraint(equalTo: contentContainer.bottomAnchor)
-            ])
-        }
-    }
-
-    // Reveals the surface for the selected mode by bringing it to the front rather than hiding
-    // the others. Hiding a WebKit-backed pane gives it a zero frame, which suspends its web
-    // content and forces a slow resume and repaint on the next switch; keeping every surface
-    // mounted at full size leaves the rendered panes resident so switching is immediate. The
-    // active surface is opaque and fills the container, so it covers the ones behind it.
-    private func apply(_ mode: PreviewMode) {
-        let surfaces: [(view: NSView, isActive: Bool)] = [
-            (previewWebView, mode == .preview),
-            (rawView, mode == .raw),
-            (splitView, mode == .sideBySide)
-        ]
-        for surface in surfaces {
-            surface.view.setAccessibilityHidden(!surface.isActive)
-        }
-        if let active = surfaces.first(where: \.isActive)?.view {
-            contentContainer.addSubview(active, positioned: .above, relativeTo: nil)
-        }
-    }
-
-    // Centres the split divider once the content area has a non-zero width.
+    // Positions the divider for the initial mode once the split view has a real width.
     override func viewDidLayout() {
         super.viewDidLayout()
-        if !hasCentredDivider && splitView.bounds.width > 0 {
-            splitView.setPosition(splitView.bounds.width / 2, ofDividerAt: 0)
-            hasCentredDivider = true
+        if !hasLaidOut && splitView.bounds.width > 0 {
+            hasLaidOut = true
+            applyDividerPosition(for: currentMode)
+        }
+    }
+
+    // Records the selected mode and moves the divider to express it.
+    private func apply(_ mode: PreviewMode) {
+        currentMode = mode
+        rawView.setAccessibilityHidden(mode == .preview)
+        webView.setAccessibilityHidden(mode == .raw)
+        if hasLaidOut {
+            applyDividerPosition(for: mode)
+        }
+    }
+
+    // Collapses the pane the mode does not need; centres the divider for Side-by-side.
+    private func applyDividerPosition(for mode: PreviewMode) {
+        let width = splitView.bounds.width
+        guard width > 0 else { return }
+        switch mode {
+        case .preview:
+            splitView.setPosition(0, ofDividerAt: 0)
+        case .raw:
+            splitView.setPosition(width, ofDividerAt: 0)
+        case .sideBySide:
+            splitView.setPosition(width / 2, ofDividerAt: 0)
         }
     }
 
@@ -130,46 +112,51 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
             // The parent directory is the base for best-effort relative image resolution.
             let baseURL = url.deletingLastPathComponent()
 
-            // Every surface is populated once from the single parsed model, so switching
-            // modes later toggles visibility without reparsing or reloading.
-            previewWebView.loadDocument(model.renderedHTML, baseURL: baseURL)
-            sideWebView.loadDocument(model.renderedHTML, baseURL: baseURL)
+            // Both panes are populated once from the single parsed model, so switching modes
+            // later only moves the divider and never reparses or reloads the document.
+            webView.loadDocument(model.renderedHTML, baseURL: baseURL)
             rawView.display(model.sourceText)
-            sideRawView.display(model.sourceText)
         } catch {
-            // A parse or read failure shows an inline message rather than surfacing
-            // Quick Look's generic failure UI.
+            // A parse or read failure shows an inline message rather than surfacing Quick
+            // Look's generic failure UI.
             let html = HTMLBuilder.errorDocument(
                 message: "This Markdown file could not be previewed."
             )
-            previewWebView.loadDocument(html, baseURL: nil)
-            sideWebView.loadDocument(html, baseURL: nil)
+            webView.loadDocument(html, baseURL: nil)
 
-            // Clear the raw surfaces so a reused controller cannot show stale source
-            // from a previous file alongside the error document.
+            // Clear the raw surface so a reused controller cannot show stale source from a
+            // previous file alongside the error document.
             rawView.display("")
-            sideRawView.display("")
         }
     }
 }
 
 extension PreviewViewController: NSSplitViewDelegate {
 
-    // Keeps the left pane from collapsing below the minimum width.
+    // Lets Preview and Raw fully collapse the pane they do not use.
+    func splitView(_ splitView: NSSplitView, canCollapseSubview subview: NSView) -> Bool {
+        true
+    }
+
+    // Keeps the left pane usable while dragging in Side-by-side; allows full collapse otherwise.
     func splitView(
         _ splitView: NSSplitView,
         constrainMinCoordinate proposedMinimumPosition: CGFloat,
         ofSubviewAt dividerIndex: Int
     ) -> CGFloat {
-        max(proposedMinimumPosition, Self.minimumPaneWidth)
+        currentMode == .sideBySide
+            ? max(proposedMinimumPosition, Self.minimumPaneWidth)
+            : proposedMinimumPosition
     }
 
-    // Keeps the right pane from collapsing below the minimum width.
+    // Keeps the right pane usable while dragging in Side-by-side; allows full collapse otherwise.
     func splitView(
         _ splitView: NSSplitView,
         constrainMaxCoordinate proposedMaximumPosition: CGFloat,
         ofSubviewAt dividerIndex: Int
     ) -> CGFloat {
-        min(proposedMaximumPosition, splitView.bounds.width - Self.minimumPaneWidth)
+        currentMode == .sideBySide
+            ? min(proposedMaximumPosition, splitView.bounds.width - Self.minimumPaneWidth)
+            : proposedMaximumPosition
     }
 }
